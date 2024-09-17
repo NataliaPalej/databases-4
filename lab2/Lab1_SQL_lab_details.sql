@@ -102,6 +102,6 @@ select department, round(avg(age)) as avgDeptAge from details group by departmen
 #17.	What is the average age of each position?
 select position, round(avg(age)) as avgPositionAge from details group by position;
 
-#18.	Count the number of males/females per department.  ????????
-select count(*) as totalDeptMales from details where gender="M";
+#18.	Count the number of males/females per department. 
+select department, gender, count(gender) as totalCount from details group by department, gender;
 
