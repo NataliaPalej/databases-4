@@ -1,0 +1,57 @@
+CREATE TABLE person
+(
+	P_id	INT,
+    firstName	VARCHAR(20),
+    lastName	VARCHAR(20),
+    Address	VARCHAR(20),
+    City	VARCHAR(20)
+    );
+    
+    INSERT INTO person VALUES(1, 'Des', 'Dolan', 'Garrycastle', 'Athlone');
+    INSERT INTO person VALUES(2, 'John', 'Keane', 'Main St', 'Rosemount');
+    INSERT INTO person VALUES(3, 'Tomas', 'Mount', 'Robinstown', 'Mullingar');
+    
+    SELECT * from person;
+    
+    CREATE TABLE orders(
+		O_id	INT,
+        OrderNo	VARCHAR(20),
+        P_id	INT
+    );
+    
+    INSERT INTO orders VALUES(1,'77895',3);
+    INSERT INTO orders VALUES(2,'44678',3);
+    INSERT INTO orders VALUES(3,'22456',1);
+    INSERT INTO orders VALUES(4,'24562',1);
+    INSERT INTO orders VALUES(5,'34764',15);
+    
+    SELECT * FROM orders;
+
+
+
+ELIMITER //
+
+create procedure spUpdateDetailsRate (
+personID INT,
+firstName  VARCHAR(20),
+lastName VARCHAR(20),
+rate INT
+)
+
+begin
+declare sql_error tinyint default false;
+declare continue handler for sqlexception
+set sql_error = true;
+
+start transaction;
+
+update details set rate="15" WHERE firstName="Joe",
+if sql_error=false then
+commit;
+else
+rollback;
+end if;
+
+select * from spUpdateDetailsRate;
+
+end//

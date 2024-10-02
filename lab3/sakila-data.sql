@@ -35,7 +35,7 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
 SET @old_autocommit=@@autocommit;
 
-USE sakila;
+USE sakdetailsila;
 
 --
 -- Dumping data for table actor

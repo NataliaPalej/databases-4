@@ -5,7 +5,7 @@ USE DB4_2024;
 DROP TABLE IF EXISTS details;
 
 
-CREATE TABLE DETAILS (
+CREATE TABLE details (
 	id INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
 	firstName VARCHAR(15) NOT NULL,
 	lastName VARCHAR(20) NOT NULL,
@@ -42,7 +42,9 @@ INSERT INTO details VALUES ( null, 'Julia', 'Moore', 36, 'F', 'Administrator', '
 SELECT * from details;
 
 #1.	Get the details of all employees who are not between the ages of 40 and 50.
-select * from details where age < 40 and age < 50;
+select * from details where age < 40 or age > 50;
+# between is not inclusive 
+select * from details where age not between 40 and 50;
 
 #2.	Get the details of all employees who work between the 10 and 15 hours per week.
 select * from details where hours >= 10 and hours <= 15;
@@ -56,9 +58,11 @@ select * from details where firstName like "_u%";
 #5.	Find all employees whose first name:
 #	- ends with n and is only 4 letters in length
 select * from details where firstName like "___n";
+select * from details where firstName like "%n" and length(firstName) = 4;
 
 #	- starts with a ‘J’ but is only 4 letters in length
 select * from details where firstName like "J___";
+select * from details where firstName like "J%" and length(firstName) = 4;
 
 #	- is only 3 letters in length
 select * from details where length(firstName) = 3;
@@ -70,34 +74,42 @@ select * from details where length(firstName) > 4;
 select * from details where gender="F" and age like "%3%";
 
 #7.	Count the number of females.
+# pattern matching means using LIKE instead of equals. "=" should be used for numbers, not strings. Use LIKE instead
 select count(*) as totalFemales from details where gender="F";
+select count(*) as totalFemales from details where gender LIKE "F";
 
 #8.	Count the number of males.
 select count(*) as totalMales from details where gender="M";
 
 #9.	Calculate the average age of the females.
-select round(avg(age), 2) as avgFemaleAge from details where gender="F";
+select round(avg(age)) as avgFemaleAge from details where gender="F";
 
 #10.	Calculate the average age of the males.
-select round(avg(age), 2) as avgMaleAge from details where gender="M";
+select round(avg(age)) as avgMaleAge from details where gender="M";
 
 #11.	Who is the oldest employee?
 select firstName, lastName, max(age) as OldestEmployee from details;
+select * from details order by age desc limit 1;
+# we can use subquery as the question asks for WHO is the oldest, we can return just the name
+select firstName from details where age = (select max(age) from details);
 
 #12.	Who is the youngest employee?
 select firstName, lastName, min(age) as YoungestEmployee from details;
+select * from details order by age asc limit 1;
 
 #13.	What is the average hours worked?
 select round(avg(hours), 2) as avgHours from details;
 
 #14.	What is the total of the female wage?
-select round(sum(rate), 2) as totalFemaleWage from details where gender = "F";
+select round(sum(rate*hours), 2) as totalFemaleWage from details where gender = "F";
 
 #15.	What is the total of the male wage?
-select round(sum(rate), 2) as totalMaleWage from details where gender = "M";
+select round(sum(rate*hours), 2) as totalMaleWage from details where gender = "M";
 
 #16.	What is the average age in each department?
 select department, round(avg(age)) as avgDeptAge from details group by department;
+# filtering on the summary -> use HAVING
+select department, round(avg(age)) as avgDeptAge from details group by department having avg(age) > 40;
 
 #17.	What is the average age of each position?
 select position, round(avg(age)) as avgPositionAge from details group by position;
@@ -105,3 +117,7 @@ select position, round(avg(age)) as avgPositionAge from details group by positio
 #18.	Count the number of males/females per department. 
 select department, gender, count(gender) as totalCount from details group by department, gender;
 
+# check how many unique positions there is in the table
+select distinct position from details;
+# count unique positions 
+select count(distinct position) as "Unique Positions" from details;
