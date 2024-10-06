@@ -68,3 +68,35 @@ INSERT INTO Project (ProjectName, Department_Id, Budget) VALUES
 ('Marketing Campaign', 3, 50000.00),
 ('Cloud Migration', 4, 120000.00),
 ('Data Analysis Tool', 5, 80000.00);
+
+
+-- 1. Retrieve all employees who work in the 'HR' department.
+-- 2. Fetch the total number of employees who joined before the year 2020.
+-- 3. List all employees whose salary is above 75,000.
+-- 4. Find the employees whose email contains the word 'example'.
+-- 5. List the employees hired in the last 5 years (from today’s date).
+-- 6. Retrieve the departments with more than 3 employees.
+-- 7. Fetch the average salary of employees grouped by department.
+-- 8. Find the highest paid employee in the Engineering department.
+-- 9. Retrieve the names of employees working in departments located in 'San Francisco'.
+-- 10. Display the count of employees in each department, including departments with no employees.
+-- 11. Fetch employees whose first or last name starts with 'J'.
+-- 12. Find the employees who have a NULL value for the Department_Id.
+-- 13. Retrieve the list of all projects and their associated department names.
+-- 14. Update the salary of employees in the Sales department, increasing it by 5%.
+-- 15. Delete the employee records where the hire date is before 2015.
+-- 16. Retrieve the names of employees who have the same first name but work in different departments.
+-- 17. Fetch the total budget of all projects associated with the 'Finance' department.
+-- 18. List all departments that do not have any projects assigned to them.
+-- 19. Fetch the employee with the second-highest salary in the company.
+-- 20. Count how many employees have an email domain ending with 'example.com'.
+-- 21. Retrieve the employees who are older than 40 and working in the IT department.
+-- 22. List the departments where employees' average salary is below 60,000.
+-- 23. Find all projects where the budget is greater than the average budget of all projects.
+-- 24. Insert a new employee with all fields filled, and assign them to the IT department.
+-- 25. Update the email of the employee 'John Davis' to 'jdavis@example.com'.
+-- 26. Write a stored procedure to retrieve all employees by department name.
+-- 27. Write a stored procedure to update the salary of an employee given their Employee_Id.
+-- 28. Write a function to calculate the average age of employees in a given department.
+-- 29. Find employees who were hired between 2017 and 2021, inclusive.
+-- 30. List all employees who work in departments that start with the letter 'M'.
