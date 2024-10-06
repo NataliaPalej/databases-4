@@ -97,6 +97,39 @@ INSERT INTO Project (ProjectName, Department_Id, Budget) VALUES
 -- 25. Update the email of the employee 'John Davis' to 'jdavis@example.com'.
 -- 26. Write a stored procedure to retrieve all employees by department name.
 -- 27. Write a stored procedure to update the salary of an employee given their Employee_Id.
+drop procedure if exists sp_updateSalary;
+delimiter //
+create procedure sp_updateSalary(
+employeeId int,
+newSalary decimal(9, 2)
+)
+begin
+update employee set Salary=newSalary where Employee_Id=employeeId;
+end //
+delimiter ;
+call sp_updateSalary(1, 9999);
+select * from employee where employee_Id=1;
+
 -- 28. Write a function to calculate the average age of employees in a given department.
+drop function if exists fn_averageAge;
+delimiter //
+create function fn_averageAge(
+departmentId int
+)
+returns int
+
+begin
+declare averageAge int;
+select round(avg(Age)) into averageAge from employee where Department_Id=departmentId; 
+return averageAge;
+end //
+delimiter ;
+
+select fn_averageAge(1);
+select avg(Age) as "avgAge" from employee where Department_Id=1; # checking if above correct
+
 -- 29. Find employees who were hired between 2017 and 2021, inclusive.
+select FirstName, LastName, HireDate from employee where year(HireDate) between 2017 and 2021 order by HireDate;
+
 -- 30. List all employees who work in departments that start with the letter 'M'.
+select * from employee e join department d on e.Department_Id=d.Department_Id where DepartmentName like "M%";
