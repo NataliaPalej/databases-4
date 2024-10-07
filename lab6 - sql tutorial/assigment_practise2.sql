@@ -133,3 +133,19 @@ select FirstName, LastName, HireDate from employee where year(HireDate) between 
 
 -- 30. List all employees who work in departments that start with the letter 'M'.
 select * from employee e join department d on e.Department_Id=d.Department_Id where DepartmentName like "M%";
+
+-- 31. Create a view that displays the first name, last name, and department name for employees hired after 2019.
+
+-- 32. Create a trigger that automatically updates the `LastUpdated` column in the employee table every time an employee's salary is updated.
+
+-- 33. Describe the structure of the `department` table.
+-- 34. Create a view that shows the total salary for each department.
+
+-- 35. Create a trigger that prevents an employee from being deleted if their salary is greater than 50,000.
+
+-- 36. Create a view to show all employees who have not been assigned to any department yet.
+
+-- 37. Describe the structure of the `employee` table.
+
+-- 38. Create a trigger that automatically inserts a log record into a `salary_changes` table every time an employee’s salary is increased.
+
