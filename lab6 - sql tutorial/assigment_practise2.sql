@@ -1,3 +1,8 @@
+-- Practice Queries 2
+DROP DATABASE IF EXISTS practive_test;
+CREATE DATABASE IF NOT EXISTS practive_test;
+USE practive_test;
+
 -- Creating Department table
 CREATE TABLE Department (
     Department_Id INT PRIMARY KEY AUTO_INCREMENT,
@@ -71,31 +76,99 @@ INSERT INTO Project (ProjectName, Department_Id, Budget) VALUES
 
 
 -- 1. Retrieve all employees who work in the 'HR' department.
+select * from employee e join department d on e.Department_Id=d.Department_Id where d.DepartmentName like "HR";
+
 -- 2. Fetch the total number of employees who joined before the year 2020.
+select count(*) as "TotalJoinedBefore2020" from employee where year(HireDate) < 2020;
+
 -- 3. List all employees whose salary is above 75,000.
+select * from employee where Salary > 75000;
+
 -- 4. Find the employees whose email contains the word 'example'.
+select * from employee where Email like "%example%";
+
 -- 5. List the employees hired in the last 5 years (from today’s date).
+select * from employee where year(HireDate) < now() and year(HireDate) >= year(now())-5; 
+
 -- 6. Retrieve the departments with more than 3 employees.
+select d.DepartmentName, count(e.Department_Id) as "totalEmployees" from employee e join department d on e.Department_Id=d.Department_Id group by d.DepartmentName having count(e.Department_Id) > 2;
+
 -- 7. Fetch the average salary of employees grouped by department.
+select round(avg(e.Salary), 2) as "AvgSalary", d.DepartmentName as "Department" from employee e join department d on e.Department_Id=d.Department_Id group by d.DepartmentName;
+
 -- 8. Find the highest paid employee in the Engineering department.
+select e.FirstName, e.LastName, e.Salary from employee e join department d on e.Department_Id=d.Department_Id where DepartmentName like "Engineering" having max(e.Salary);
+
 -- 9. Retrieve the names of employees working in departments located in 'San Francisco'.
+select e.FirstName, e.LastName from employee e join department d on e.Department_Id=d.Department_Id where d.Location like "San Francisco";
+
 -- 10. Display the count of employees in each department, including departments with no employees.
+select Department_Id, count(Employee_Id) as "TotalEmployee" from employee group by Department_Id;
+# or I could enhance the output to see what department it is rather than just its ID
+select d.DepartmentName, count(e.Employee_Id) as "TotalEmployee" from employee e left join department d on e.Department_Id=d.Department_Id group by d.DepartmentName;
+
 -- 11. Fetch employees whose first or last name starts with 'J'.
+select * from employee where FirstName like "J%" or LastName like "J%";
+
 -- 12. Find the employees who have a NULL value for the Department_Id.
+select * from employee where Department_Id is NULL;
+
 -- 13. Retrieve the list of all projects and their associated department names.
+select p.ProjectName, d.DepartmentName from project p left join department d on p.Department_Id=d.Department_Id;
+
 -- 14. Update the salary of employees in the Sales department, increasing it by 5%.
+drop procedure if exists sp_updateSalary;
+delimiter //
+create procedure sp_updateSalary(
+departmentToUpdate int
+)
+begin
+declare resultMessage varchar(50);
+update employee set Salary=Salary*1.05 where Department_Id=departmentToUpdate;
+end //
+delimiter ;
+
+select * from department;
+select * from employee where Department_Id=5;
+
+call sp_updateSalary(5);
+
 -- 15. Delete the employee records where the hire date is before 2015.
+delete from employee where year(HireDate) < 2015;
+select * from employee where year(HireDate) < 2015;
+
 -- 16. Retrieve the names of employees who have the same first name but work in different departments.
+select FirstName from employee group by FirstName having count(distinct Department_Id) > 1;
+
 -- 17. Fetch the total budget of all projects associated with the 'Finance' department.
+
+
 -- 18. List all departments that do not have any projects assigned to them.
+
+
 -- 19. Fetch the employee with the second-highest salary in the company.
+
+
 -- 20. Count how many employees have an email domain ending with 'example.com'.
+
+
 -- 21. Retrieve the employees who are older than 40 and working in the IT department.
+
+
 -- 22. List the departments where employees' average salary is below 60,000.
+
+
 -- 23. Find all projects where the budget is greater than the average budget of all projects.
+
+
 -- 24. Insert a new employee with all fields filled, and assign them to the IT department.
+
+
 -- 25. Update the email of the employee 'John Davis' to 'jdavis@example.com'.
+
+
 -- 26. Write a stored procedure to retrieve all employees by department name.
+
 -- 27. Write a stored procedure to update the salary of an employee given their Employee_Id.
 drop procedure if exists sp_updateSalary;
 delimiter //
@@ -139,6 +212,7 @@ select * from employee e join department d on e.Department_Id=d.Department_Id wh
 -- 32. Create a trigger that automatically updates the `LastUpdated` column in the employee table every time an employee's salary is updated.
 
 -- 33. Describe the structure of the `department` table.
+
 -- 34. Create a view that shows the total salary for each department.
 
 -- 35. Create a trigger that prevents an employee from being deleted if their salary is greater than 50,000.
