@@ -88,7 +88,7 @@ select * from employee where Salary > 75000;
 select * from employee where Email like "%example%";
 
 -- 5. List the employees hired in the last 5 years (from today’s date).
-select * from employee where year(HireDate) < now() and year(HireDate) >= year(now())-5; 
+select * from employee where year(HireDate) >= year(now())-5; 
 
 -- 6. Retrieve the departments with more than 3 employees.
 select d.DepartmentName, count(e.Department_Id) as "totalEmployees" from employee e join department d on e.Department_Id=d.Department_Id group by d.DepartmentName having count(e.Department_Id) > 2;
@@ -123,7 +123,6 @@ create procedure sp_updateSalary(
 departmentToUpdate int
 )
 begin
-declare resultMessage varchar(50);
 update employee set Salary=Salary*1.05 where Department_Id=departmentToUpdate;
 end //
 delimiter ;
@@ -141,33 +140,52 @@ select * from employee where year(HireDate) < 2015;
 select FirstName from employee group by FirstName having count(distinct Department_Id) > 1;
 
 -- 17. Fetch the total budget of all projects associated with the 'Finance' department.
-
+select sum(p.Budget) as "TotalBudget", d.DepartmentName from project p join department d on p.Department_Id=d.Department_Id where d.DepartmentName like "Finance";
 
 -- 18. List all departments that do not have any projects assigned to them.
+select d.DepartmentName from department d left join project p on d.Department_Id=p.Department_Id where Project_Id is null; 
 
+select * from department;
+select * from project;
 
 -- 19. Fetch the employee with the second-highest salary in the company.
-
+select FirstName, LastName, Salary as "SecondHighestSalary" from employee where Salary < (select max(Salary) from employee) order by Salary desc limit 1;
+select * from employee;
 
 -- 20. Count how many employees have an email domain ending with 'example.com'.
-
+select count(Employee_Id) as "totalCount" from employee where email like "%example.com";
 
 -- 21. Retrieve the employees who are older than 40 and working in the IT department.
-
+select e.FirstName, e.LastName, e.Age, d.DepartmentName from employee e join department d on e.Department_Id=d.Department_Id where e.Age >= 40 and d.DepartmentName like "IT";
 
 -- 22. List the departments where employees' average salary is below 60,000.
-
+select d.DepartmentName, round(avg(e.Salary), 2) as "avgSalaryBelow60k" from department d join employee e on e.Department_Id=d.Department_Id 
+group by d.DepartmentName having avg(e.Salary) < 60000;
 
 -- 23. Find all projects where the budget is greater than the average budget of all projects.
-
+select d.DepartmentName, p.Budget from department d join project p on d.Department_Id=p.Department_Id where p.Budget > (select avg(Budget) from project);
+select avg(Budget) from project;
 
 -- 24. Insert a new employee with all fields filled, and assign them to the IT department.
+insert into employee (FirstName, LastName, Department_Id, HireDate, Salary, Email, Age) values ("Lilly", "Piesek", 6, "2024-10-07", "125999.00", "LillyPiesek@gmail.com", 18);
+select * from employee;
 
-
--- 25. Update the email of the employee 'John Davis' to 'jdavis@example.com'.
-
+-- 25. Update the email of the employee 'John Miller' to 'jmiller@gmail.com'.
+select * from employee where FirstName like "John";
+update employee set email="jmiller@gmail.com" where FirstName like "John" and LastName like "Miller";
 
 -- 26. Write a stored procedure to retrieve all employees by department name.
+drop procedure if exists sp_departmentEmployees;
+delimiter //
+create procedure sp_departmentEmployees (
+department VARCHAR(50)
+)
+begin
+select * from employee e join department d on e.Department_Id=d.Department_Id where d.DepartmentName like department;
+end //
+delimiter ;
+
+call sp_departmentEmployees("IT");
 
 -- 27. Write a stored procedure to update the salary of an employee given their Employee_Id.
 drop procedure if exists sp_updateSalary;
@@ -208,18 +226,78 @@ select FirstName, LastName, HireDate from employee where year(HireDate) between 
 select * from employee e join department d on e.Department_Id=d.Department_Id where DepartmentName like "M%";
 
 -- 31. Create a view that displays the first name, last name, and department name for employees hired after 2019.
+create view v_employees_hired_after_2019 as select e.FirstName, e.LastName, d.DepartmentName from employee e join department d on e.Department_Id=d.Department_Id where year(e.HireDate) < 2019; 
+select * from v_employees_hired_after_2019;
 
 -- 32. Create a trigger that automatically updates the `LastUpdated` column in the employee table every time an employee's salary is updated.
+alter table employee add column LastUpdated VARCHAR(50);
+drop trigger if exists tr_LastUpdated;
+select * from employee;
+delimiter //
+create trigger tr_LastUpdated before update on employee for each row 
+begin
+set NEW.LastUpdated=now();
+end //
+delimiter ;
+
+update employee set Email="karensmith@gmail.com" where Employee_Id=5;
 
 -- 33. Describe the structure of the `department` table.
+describe department; 
 
 -- 34. Create a view that shows the total salary for each department.
+create view v_totalSalaryPerDepartment as select d.DepartmentName, sum(Salary) as "SalaryTotal" from employee e join department d on e.Department_Id=d.Department_Id group by d.DepartmentName;
+select * from v_totalSalaryPerDepartment;
 
 -- 35. Create a trigger that prevents an employee from being deleted if their salary is greater than 50,000.
+drop trigger if exists tr_preventDelete;
+delimiter //
+create trigger tr_preventDelete 
+before delete on employee 
+for each row 
+begin 
+    if OLD.Salary > 50000 then
+        signal sqlstate '45000' 
+        set message_text = 'Cannot delete employee with salary greater than 50,000';
+    end if;
+end //
+delimiter ;
+delete from employee where FirstName like "Lilly";
 
 -- 36. Create a view to show all employees who have not been assigned to any department yet.
+create view v_noDepartment as select * from employee where Department_Id is null;
+select * from v_noDepartment;
 
 -- 37. Describe the structure of the `employee` table.
+describe employee;
 
 -- 38. Create a trigger that automatically inserts a log record into a `salary_changes` table every time an employee’s salary is increased.
+create table salary_changes (
+id int primary key AUTO_INCREMENT, 
+employeeId int,
+oldSalary decimal(10, 2),
+newSalary decimal(10, 2),
+changeDate timestamp);
+
+describe salary_changes;
+
+drop trigger if exists tr_salarychanges;
+delimiter //
+create trigger tr_salarychanges after update on employee for each row 
+begin 
+# check if salary increased 
+if NEW.Salary > OLD.Salary then 
+insert into salary_changes(employeeId, oldSalary, newSalary, changeDate) 
+values (OLD.Employee_Id, OLD.Salary, NEW.Salary, now());
+end if;
+end //
+delimiter ;
+
+UPDATE employee SET Salary = 99990 WHERE FirstName like "John";
+UPDATE employee SET Salary = 178520 WHERE Employee_Id = 12;
+UPDATE employee SET Salary = 223500 WHERE Employee_Id = 14;
+select * from employee;
+select * from salary_changes;
+
+
 
