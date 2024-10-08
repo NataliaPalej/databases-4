@@ -39,6 +39,11 @@ VALUES
 ('Harper', 'Lee', '1926-01-01'),
 ('Ray', 'Bradbury', '1920-01-01');
 
+INSERT INTO Authors (FirstName, LastName, DateOfBirth)
+VALUES 
+('Lilly', 'Piesek', '2021-01-01'),
+('Lola', 'Pieskowa', '2000-01-01');
+
 -- Insert random data into Books table
 INSERT INTO Books (Title, AuthorId, Genre, Price, Stock)
 VALUES 
@@ -58,6 +63,10 @@ VALUES
 ('777', 1, 'Dystopian', 12.99, 50),
 ('Moj i Moja', 2, 'Romance', 18.99, 30),
 ('Zloty Prosiaczzek', 3, 'Adventure', 4.99, 3);
+
+INSERT INTO Books (Title, AuthorId, Genre, Price, Stock)
+VALUES 
+('Moja Przygoda', 1, 'Adventure', 59.99, 1);
 
 select * from books;
 select * from authors;
@@ -86,38 +95,87 @@ update books set Stock=Stock+newStock where BookID=bookToUpdate;
 end //
 delimiter ;
 select * from books where BookID=1;
-call sp_addStock(1, 60)
+call sp_addStock(1, 60);
 
 -- 6. Create a function that returns the average price of books in the database.
+drop function if exists fn_avgPrice;
+delimiter //
+create function fn_avgPrice(
+)
+returns decimal(9, 2)
 
+begin
+declare avgPrice decimal(9, 2);
+select avg(Price) into avgPrice from books;
+return avgPrice;
+end //
+delimiter ;
+
+select fn_avgPrice();
 
 -- 7. Create a view that shows all books along with their authors and prices.
-
+drop view if exists v_BooksInfo;
+create view v_BooksInfo as select a.FirstName, a.LastName, b.Title, b.Price from authors a left join books b on a.AuthorID=b.AuthorID;
+select * from v_BooksInfo;
 
 -- 8. Explain how you would analyze the performance of a query that retrieves all books.
-
+explain select * from books;
 
 -- 9. Describe the structure of the Books table and its columns.
-
+describe books;
 
 -- 10. Create a trigger that updates the stock count of a book when a sale is made.
+drop trigger if exists tr_updateStock;
+alter table books add column totalSold int;
+delimiter //
+create trigger tr_updateStock after update on books for each row
+begin 
+if NEW.Stock < OLD.Stock THEN
+set NEW.isSold=true;
+set NEW.totalSold=OLD.totalSold+1;
+end if;
+end //
+delimiter ;
 
+select * from books where BookID=1;
+update books set Stock=Stock-1 where BookID=1;
 
 -- 11. Retrieve all authors and their respective books, including those who have no books.
-
+select * from authors a left join books b on a.AuthorID=b.AuthorID;
 
 -- 12. Get the total revenue generated from books in the "Fiction" genre.
-
+select Genre, sum(Price) as "totalRevenue" from books where Genre like "%Fiction%";
+select * from books;
 
 -- 13. List the titles of books that have more than 2 copies in stock.
-
+select Title, Stock from books where Stock > 2;
 
 -- 14. Retrieve all authors born after 1900.
-
+select * from authors where year(DateOfBirth) > 1900 order by DateOfBirth;
 
 -- 15. Find the book with the highest price.
+select Title, Price as "HighestPrice" from books where Price = (select max(Price) from books);  
+select * from books;
+
 -- 16. Combine the titles of books from both Fiction and Dystopian genres in a single result set.
+select Title, Genre from books where Genre like "%Fiction%"
+union
+select Title, Genre from books where Genre like "Dystopian";
+
 -- 17. Count the number of books in each genre and display it alongside the genre name.
+select Genre, count(BookID) as "totalBooks" from books group by Genre;
+
 -- 18. Retrieve the titles of books that have a price lower than the average price of all books.
+select Title, Price from books where Price < (select avg(Price) from books) order by Price;
+select avg(Price) from books;
+select * from books;
+
 -- 19. Retrieve the titles of all books ordered by price in descending order.
+select Title, Price from books order by Price desc;
+
 -- 20. Find all books whose title contains the word "the" and display the count of such books.
+select Title from books where Title like "%the%"
+union
+select count(BookID) from books where Title like "%the%";
+# not sure if above is correct that displays total of books consisting "the" (5) or is it looking for count per book?
+select Title,count(BookID) as "TotalCount" from books where Title like "%the%" group by Title;
