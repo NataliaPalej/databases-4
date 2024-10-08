@@ -121,3 +121,5 @@ select department, gender, count(gender) as totalCount from details group by dep
 select distinct position from details;
 # count unique positions 
 select count(distinct position) as "Unique Positions" from details;
+
+
