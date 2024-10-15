@@ -141,9 +141,7 @@ select first_name, last_name from customers where length(last_name) >= 6;
 -- 3. List the names of the databases on the DB Server.	[5 marks]
 show databases;
 
--- 4. List the total list price for all the products, along with the average price and average discount percent, 
-     -- highest and lowest prices. Use the alias 'Total List Price', 'Average List Price', 'Average Discount Percent', ‘H’, ‘L’	[5 marks]
-select * from products; 
+-- 4. List the total list price for all the products, along with the average price and average discount percent, highest and lowest prices. Use the alias 'Total List Price', 'Average List Price', 'Average Discount Percent', ‘H’, ‘L’	[5 marks]
 select sum(list_price) as "Total List Price", avg(list_price) as "Average List Price", avg(discount_percent) 
 as "Average Discount Percent", max(list_price) as "H", min(list_price) as "L" from products;
      
@@ -157,11 +155,11 @@ select first_name, last_name, email_address from customers where first_name like
 -- 7. Write a SELECT statement that returns the all the product_code, product_name and list_price where 
 --   the price is greater than 500 and less than 2000. Sort the results in ascending order by list_price.[5 marks]
  select product_code, product_name, list_price from products where list_price between 500 and 2000 
- group by product_code order by list_price asc;
+ group by product_code order by list_price asc;  # GROUP BY IS UNNECESSARY HERE
   
 -- 8. Write a query to return the category_name, product_name and list_price of all products. Sort the result 	
   -- set by category_name in descending order, and then by product_name in ascending order.	[5 marks]
-  select c.category_name, p.product_name, p.list_price from products p join categories c 
+  select c.category_name, p.product_name, p.list_price from products p join categories c    # FORGOT TO ADD ON p.categoryid=c.categoryid
   order by c.category_name desc, p.product_name asc;
 
 
@@ -226,7 +224,7 @@ productID int
 returns decimal (9, 2)
 begin
 declare DiscountedPrice decimal(9,2);
-select (list_price*discount_percent)/100 into DiscountedPrice from products where product_id=ProductID;
+select (list_price*discount_percent)/100 into DiscountedPrice from products where product_id=ProductID;    # this returns discount not the price after discount and ProductID should be productID
 return DiscountedPrice;
 end //
 delimiter ;
