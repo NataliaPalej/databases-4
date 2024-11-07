@@ -132,41 +132,44 @@ select * from order_items;
 
 
 # Write single SQL queries (unless additional are specified) to answer the follow questions:
--- 1. Count the number of different category_ids on the product table.	[5 marks]
+-- 1. Count the number of different category_ids on the product table.	[5 marks] 5pkt
 select count(distinct category_id) as "CategoryCount" from products;
 
--- 2. List the full names of the customers who’s last_name is at least 6 letters long.	[5 marks]
+-- 2. List the full names of the customers who’s last_name is at least 6 letters long.	[5 marks] 5pkt
 select first_name, last_name from customers where length(last_name) >= 6;
 
--- 3. List the names of the databases on the DB Server.	[5 marks]
+-- 3. List the names of the databases on the DB Server.	[5 marks] 5pkt
 show databases;
 
--- 4. List the total list price for all the products, along with the average price and average discount percent, highest and lowest prices. Use the alias 'Total List Price', 'Average List Price', 'Average Discount Percent', ‘H’, ‘L’	[5 marks]
+-- 4. List the total list price for all the products, along with the average price and average discount percent, highest and lowest prices. 
+-- Use the alias 'Total List Price', 'Average List Price', 'Average Discount Percent', ‘H’, ‘L’	[5 marks] 5pkt
 select sum(list_price) as "Total List Price", avg(list_price) as "Average List Price", avg(discount_percent) 
 as "Average Discount Percent", max(list_price) as "H", min(list_price) as "L" from products;
      
--- 5. List the product_code and product_name for products with Cymbals as part of the description.	[5 marks]
-select product_code, product_name from products where description like "%Cymbals%";
+-- 5. List the product_code and product_name for products with Cymbals as part of the description.	[5 marks] 5pkt
+select product_code, product_name from products where description like "%Cymbals%"; 
 
 -- 6. List the first_name, last_name and email_address for all customers where the letter “a” 
-   -- is the 3rd letter of their first_name.	[5 marks]
+   -- is the 3rd letter of their first_name.	[5 marks] 5pkt
 select first_name, last_name, email_address from customers where first_name like "__a%";
 
 -- 7. Write a SELECT statement that returns the all the product_code, product_name and list_price where 
---   the price is greater than 500 and less than 2000. Sort the results in ascending order by list_price.[5 marks]
+--   the price is greater than 500 and less than 2000. Sort the results in ascending order by list_price.[5 marks] ???
+# not full marks as between brings INCLUSIVE, instead of GREATER/LESS THAN
  select product_code, product_name, list_price from products where list_price between 500 and 2000 
  group by product_code order by list_price asc;  # GROUP BY IS UNNECESSARY HERE
   
 -- 8. Write a query to return the category_name, product_name and list_price of all products. Sort the result 	
-  -- set by category_name in descending order, and then by product_name in ascending order.	[5 marks]
-  select c.category_name, p.product_name, p.list_price from products p join categories c    # FORGOT TO ADD ON p.categoryid=c.categoryid
+  -- set by category_name in descending order, and then by product_name in ascending order.	[5 marks] ??
+  # FORGOT TO ADD ON p.categoryid=c.categoryid
+  select c.category_name, p.product_name, p.list_price from products p join categories c    
   order by c.category_name desc, p.product_name asc;
 
 
 -- 9. Create a View called vwPriceAndDiscount to show the product_name, list_price, discount_percent, discount_amount  
    -- and discounted price for each product.
 # Use the View to display the results in descending order by product name, and give the fields more 
-# readable names in the output.	[10 marks]
+# readable names in the output.	[10 marks] 10pkt
 drop view if exists vwPriceAndDiscount;
 create view vwPriceAndDiscount as select product_name as "Product", list_price as "Price", discount_percent as "Discount", 
 round((list_price*discount_percent)/100, 2) as "Discount Amount", list_price-round((list_price*discount_percent)/100, 2) 
@@ -175,27 +178,28 @@ as "Discounted Price" from products;
 select * from vwPriceAndDiscount order by Product desc;
 
 -- 10.	Write a query to show product name, the total list_price and the total discount amount for each product ordered.
--- The results should show a summary of results in descending order by product name and also have user friendly field names.[5 marks]
+-- The results should show a summary of results in descending order by product name and also have user friendly field names.[5 marks] ??
+# not all products ordered 
 select product_name as "Product", sum(list_price) as "TotalPrice", sum(round((list_price*discount_percent)/100, 2)) 
 as "TotalDiscount" from products group by product_name order by product_name desc;
 
--- 11.	Write a query to show all customers email_address and also	the number of orders they have, if any.	[5 marks]
+-- 11.	Write a query to show all customers email_address and also	the number of orders they have, if any.	[5 marks] 5pkt
 select c.email_address, count(o.order_id) as "TotalOrders" from customers c left join orders o 
 on c.customer_id=o.customer_id group by c.customer_id;
 
--- 12.	Add a new category called ‘Kazoos’ and then describe the table structure.	[5 marks]
+-- 12.	Add a new category called ‘Kazoos’ and then describe the table structure.	[5 marks] 5pkt
 select * from categories;
 insert into categories (category_name) values ("Kazoos");
 describe categories;
 
 
--- 13.	Update the new category_name to ‘Misc’ and display the results.	[5 marks]
+-- 13.	Update the new category_name to ‘Misc’ and display the results.	[5 marks] 5pkt
 select * from categories;
 update categories set category_name="Misc" where category_name like "Kazoos";
 
 -- 14. Write a Stored Procedure to update the discount_percent to 99 for a specified product_id, which will be passed in as a parameter,
    --  and display the results of the updated table. 
-   # Note: The skeleton code is included in Appendix A. Upload the code and show the SP being called to display the results [15 marks]
+   # Note: The skeleton code is included in Appendix A. Upload the code and show the SP being called to display the results [15 marks] 15pkt
    drop procedure if exists sp_UpdateDiscountPercent;
    delimiter //
    create procedure sp_UpdateDiscountPercent(
@@ -214,7 +218,8 @@ update categories set category_name="Misc" where category_name like "Kazoos";
 
 
 -- 15.	Write a Function to return the discounted price of any item using the product_id as an input parameter. 
--- The price should be returned as a decimal. Upload the code for the Function, the function call and results
+-- The price should be returned as a decimal. Upload the code for the Function, the function call and results [15 marks] ???
+# returned the wrong value 
 drop function if exists fnGetDiscountedPrice;
 
 delimiter //
@@ -228,5 +233,4 @@ select (list_price*discount_percent)/100 into DiscountedPrice from products wher
 return DiscountedPrice;
 end //
 delimiter ;
-
 select fnGetDiscountedPrice(1);

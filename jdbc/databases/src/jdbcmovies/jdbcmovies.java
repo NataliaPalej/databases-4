@@ -5,7 +5,7 @@ public class jdbcmovies{
 	public static void main (String args[]){ 
 	
 		//Change URL depending on your database/port/username etc...
-		String url = "jdbc:mysql://localhost:3307/Databases4";
+		String url = "jdbc:mysql://localhost:3306/alarms";
 		String userName = "root";
 		String password = "";
 		
